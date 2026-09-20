@@ -121,7 +121,7 @@ jobs:
           retention-days: 1
 
   release:
-    name: Upload v${{ env.ARCHIVE_VERSION }}
+    name: Upload
     runs-on: ubuntu-latest
     needs: [windows_x64]
     steps:
