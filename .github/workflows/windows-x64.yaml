@@ -72,7 +72,7 @@ jobs:
           if (-not (Test-Path $vulkanSdk)) {
             throw "Vulkan SDK not found at: $vulkanSdk"
           }
-          $vsDevShell = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1"
+          $vsDevShell = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\Launch-VsDevShell.ps1"
           if (-not (Test-Path $vsDevShell)) {
             throw "VS 2022 dev shell script not found at: $vsDevShell"
           }
