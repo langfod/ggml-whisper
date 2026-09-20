@@ -1,0 +1,53 @@
+# IDE and editor settings
+.idea
+.vs
+.vscode/settings.json
+.vscode/tasks.json
+
+
+# Build artifacts
+.build.lock
+build
+cmake-build*
+vcpkg_installed
+*.code-workspace
+utilities/output
+/web/**/dist
+/web/**/dist-*/
+/web/**/node_modules
+
+# Libraries
+external/ccache-*
+external/onnxruntime-win-x64-*
+external/whisper-cpp-*
+/external/SpriggitCLI-*
+/external/papyrus-compiler*
+/external/whisper.cpp_ggml
+
+# Claude
+/.claude/*
+!/.claude/agents/
+!/.claude/commands/
+!/.claude/hooks/
+!/.claude/CAPABILITIES.md
+# Headless runs use --permission-mode dontAsk, which auto-denies anything this
+# allowlist does not match. It has to travel with the repo to reach the runner.
+!/.claude/settings.json
+CLAUDE.local.md
+
+# Local files
+Build_Config_Local.ps1
+.pr*_diff.txt
+/review_*.txt
+/local_projects
+test JSON PapyrusAUtil.txt
+vscode_build_env.bat
+/output
+/test_output
+/web/.secrets/
+*.pem
+ai_docs/CPP_BACKLOG.md
+.opencode
+docs/plans/
+docs/specs/
+Build_Local.ps1

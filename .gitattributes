@@ -1,0 +1,28 @@
+# Auto detect text files and perform LF normalization
+* text eol=crlf
+
+*.csv text eol=crlf
+
+# Source code files
+*.cpp text eol=crlf
+*.h text eol=crlf
+*.py text eol=crlf
+
+# Configuration files
+*.json text eol=crlf
+*.yaml text eol=crlf
+
+# Documentation
+*.md text eol=crlf
+*.txt text eol=crlf
+
+# Git files
+.gitignore text eol=crlf
+.gitattributes text eol=crlf
+
+# vcpkg port patches must stay LF in the worktree: git apply rejects CR in context
+vcpkg-ports/**/*.diff text eol=lf
+
+# plugin files
+*.dll binary
+*.pdb binary

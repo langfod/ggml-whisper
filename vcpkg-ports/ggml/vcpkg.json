@@ -1,0 +1,72 @@
+{
+  "name": "ggml",
+  "version": "0.24.0",
+  "port-version": 0,
+  "description": "Tensor library for machine learning (audio.cpp fork with custom ops)",
+  "homepage": "https://github.com/0xShug0/audio.cpp",
+  "license": "MIT",
+  "supports": "!uwp",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "features": {
+    "blas": {
+      "description": "Enable BLAS support",
+      "dependencies": [
+        "blas",
+        "cblas"
+      ]
+    },
+    "cuda": {
+      "description": "Enable CUDA support",
+      "supports": "!(windows & staticcrt)",
+      "dependencies": [
+        "cuda"
+      ]
+    },
+    "metal": {
+      "description": "Enable Metal support",
+      "supports": "osx"
+    },
+    "opencl": {
+      "description": "Enable OpenCL support",
+      "supports": "!arm32",
+      "dependencies": [
+        "opencl"
+      ]
+    },
+    "openmp": {
+      "description": "Enable OpenMP support",
+      "supports": "!osx"
+    },
+    "vulkan": {
+      "description": "Enable Vulkan support",
+      "dependencies": [
+        {
+          "name": "ggml",
+          "host": true,
+          "default-features": false,
+          "features": [
+            "vulkan"
+          ]
+        },
+        {
+          "name": "shaderc",
+          "host": true
+        },
+        { "name": "spirv-tools", "version>=": "1.4.357.0" },
+        { "name": "spirv-headers", "version>=": "1.4.357.0" },
+        { "name": "vulkan-headers", "version>=": "1.4.357.0" },
+        { "name": "vulkan-loader", "version>=": "1.4.357.0" },
+        "vulkan"
+      ]
+    }
+  }
+}
