@@ -43,7 +43,7 @@ jobs:
         uses: Jimver/cuda-toolkit@v0.2.36
         with:
           cuda: '${{ matrix.cuda-version }}'
-          method: 'network'
+          method: 'local'
           use-github-cache: true
 
       - name: Install Vulkan SDK
