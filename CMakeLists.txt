@@ -42,6 +42,7 @@ include(CompilerFlags)
 
 enable_language(C)
 find_package(ggml CONFIG REQUIRED)
+find_package(whisper CONFIG REQUIRED)
 
 include(FindGGML)
 include(FindWhisper)
@@ -75,13 +76,12 @@ endfunction()
 set(DIST_ROOT "${BUILD_ROOT}/dist")
 
 # Whisper version from the vcpkg port manifest
-file(READ "${CMAKE_SOURCE_DIR}/vcpkg-ports/whisper-cpp/vcpkg.json" _whisper_manifest)
-string(JSON WHISPER_DIST_VERSION GET "${_whisper_manifest}" version)
+set(WHISPER_DIST_VERSION "${WHISPER_VERSION}")
 set(WHISPER_DIST_DIR "${DIST_ROOT}/whisper-windows-x64-${WHISPER_DIST_VERSION}")
 
+
 # GGML version from the vcpkg port manifest
-file(READ "${CMAKE_SOURCE_DIR}/vcpkg-ports/ggml/vcpkg.json" _ggml_manifest)
-string(JSON GGML_DIST_VERSION GET "${_ggml_manifest}" version)
+set(GGML_DIST_VERSION ${GGML_VERSION})
 
 # CUDA version from the tail of $env:CUDA_PATH (e.g. ...\CUDA\v13.3 -> 13.3)
 if(GGML_CUDA_AVAILABLE)
