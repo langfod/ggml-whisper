@@ -46,7 +46,7 @@ jobs:
           method: 'local'
           sub-packages: '["nvcc", "cublas", "cublas_dev", "cudart", "cudart_dev", "visual_studio_integration"]'
           non-cuda-sub-packages: '["libcublas"]'
-          use-local-cache: true
+          use-local-cache: false
           use-github-cache: true
 
       - name: Install Vulkan SDK
