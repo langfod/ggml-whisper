@@ -44,10 +44,8 @@ jobs:
         with:
           cuda: '${{ matrix.cuda-version }}'
           method: 'local'
-          sub-packages: '["nvcc", "cublas", "cublas_dev", "cudart", "cudart_dev", "visual_studio_integration"]'
-          non-cuda-sub-packages: '["libcublas"]'
-          use-local-cache: false
-          use-github-cache: false
+          use-local-cache: true
+          use-github-cache: true
 
       - name: Install Vulkan SDK
         #uses: humbletim/install-vulkan-sdk@v1.2
