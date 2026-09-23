@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
 
@@ -46,6 +46,7 @@ jobs:
           method: 'local'
           sub-packages: ["nvcc", "cublas", "cublas_dev", "cudart", "cudart_dev", "visual_studio_integration"]
           non-cuda-sub-packages: ["libcublas"]
+          use-local-cache: true
           use-github-cache: true
 
       - name: Install Vulkan SDK
@@ -113,6 +114,15 @@ jobs:
         with:
           path: ~/.cache/vcpkg
           key: ${{ steps.cache-primes-restore.outputs.cache-key }}
+
+
+      - name: Debug folder list
+        shell: pwsh
+        run: |
+          Write-Host "Listing contents of CUDA bin directory:"
+          Write-Host "CUDA bin directory path: $env:CUDA_PATH\bin"
+          Get-ChildItem "$env:CUDA_PATH\bin"
+
 
       - name: Archive each dist folder
         shell: pwsh
