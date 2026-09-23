@@ -44,6 +44,8 @@ jobs:
         with:
           cuda: '${{ matrix.cuda-version }}'
           method: 'local'
+          sub-packages: ["nvcc", "cublas", "cublas_dev", "cudart", "cudart_dev", "visual_studio_integration"]
+          non-cuda-sub-packages: ["libcublas"]
           use-github-cache: true
 
       - name: Install Vulkan SDK
@@ -52,6 +54,15 @@ jobs:
         with:
           version: 1.4.357.0
           cache: true
+
+      - name: Restore vcpkg Binary Cache
+        id: cache-primes-restore
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.cache/vcpkg
+          key: ${{ runner.os }}-vcpkg-${{matrix.cuda-version}}-${{ hashFiles('**/vcpkg.json', '**/vcpkg-configuration.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-${{matrix.cuda-version}}-
 
       - name: Generate build config
         shell: pwsh
@@ -95,6 +106,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "BuildRelease.ps1 failed with exit code $LASTEXITCODE"
           }
+
+      - name: Save vcpkg Binary Cache
+        id: cache-primes-save
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/vcpkg
+          key: ${{ steps.cache-primes-restore.outputs.cache-key }}
 
       - name: Archive each dist folder
         shell: pwsh
