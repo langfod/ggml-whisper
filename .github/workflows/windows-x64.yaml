@@ -55,10 +55,12 @@ jobs:
           cache: true
 
       - name: Restore vcpkg Binary Cache
-        id: cache-primes-restore
+        id: cache-vcpkg-restore
         uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/vcpkg
+          path: |
+            ~/.cache/vcpkg
+            build/vcpkg_installed
           key: ${{ runner.os }}-vcpkg-${{matrix.cuda-version}}-${{ hashFiles('**/vcpkg.json', '**/vcpkg-configuration.json') }}
           restore-keys: |
             ${{ runner.os }}-vcpkg-${{matrix.cuda-version}}-
@@ -107,19 +109,20 @@ jobs:
           }
 
       - name: Save vcpkg Binary Cache
-        id: cache-primes-save
+        if: always() && steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@v6
         with:
-          path: ~/.cache/vcpkg
-          key: ${{ steps.cache-primes-restore.outputs.cache-key }}
+          path: |
+            ~/.cache/vcpkg
+            build/vcpkg_installed
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-key }}
 
 
       - name: Debug folder list
         shell: pwsh
         run: |
-          Write-Host "Listing contents of CUDA bin directory:"
-          Write-Host "CUDA bin directory path: $env:CUDA_PATH\bin"
-          Get-ChildItem "$env:CUDA_PATH\bin"
+          Write-Host "Listing contents: "
+          Get-ChildItem "."
 
 
       - name: Archive each dist folder
