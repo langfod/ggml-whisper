@@ -170,7 +170,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ env.ARCHIVE_VERSION }}
 
-      - name: Scan with VirusTotal
+      - name: Scan ggml with VirusTotal
         continue-on-error: true
         uses: cssnr/virustotal-action@v2
         with:
@@ -178,7 +178,27 @@ jobs:
           vt_api_key: ${{ secrets.VTOTAL }}
           file_globs: |
             ggml-windows-x64-*.zip
+          update_release: true
+          release_id: v${{ env.ARCHIVE_VERSION }}
+
+      - name: Scan whisper with VirusTotal
+        continue-on-error: true
+        uses: cssnr/virustotal-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          vt_api_key: ${{ secrets.VTOTAL }}
+          file_globs: |
             whisper-windows-x64-*.zip
+          update_release: true
+          release_id: v${{ env.ARCHIVE_VERSION }}
+
+      - name: Scan cudart with VirusTotal
+        continue-on-error: true
+        uses: cssnr/virustotal-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          vt_api_key: ${{ secrets.VTOTAL }}
+          file_globs: |
             cudart-windows-x64-*.zip
           update_release: true
           release_id: v${{ env.ARCHIVE_VERSION }}
