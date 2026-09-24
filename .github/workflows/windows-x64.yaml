@@ -159,7 +159,6 @@ jobs:
         with:
           pattern: "ggml-whisper-dist-cuda-*"
           merge-multiple: true
-          skip-decompress: true
 
       - name: Upload to release
         uses: svenstaro/upload-release-action@v2
