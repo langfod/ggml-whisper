@@ -133,7 +133,27 @@ endforeach()
 if(GGML_VULKAN_AVAILABLE AND GGML_VULKAN_RUNTIME_DLL)
     dist_copy("${GGML_VULKAN_RUNTIME_DLL}" "${GGML_DIST_DIR}/bin")
 endif()
-dist_copy("${GGML_INCLUDE_DIR}/ggml.h" "${GGML_DIST_DIR}/include")
+
+# Ship the public headers required by the deployed GGML backends and by
+# whisper.h/parakeet.h, which include ggml-cpu.h and its backend/alloc headers.
+set(_ggml_headers
+    "${GGML_INCLUDE_DIR}/ggml.h"
+    "${GGML_INCLUDE_DIR}/ggml-alloc.h"
+    "${GGML_INCLUDE_DIR}/ggml-backend.h"
+    "${GGML_INCLUDE_DIR}/ggml-cpu.h"
+)
+if(GGML_CUDA_AVAILABLE)
+    list(APPEND _ggml_headers "${GGML_INCLUDE_DIR}/ggml-cuda.h")
+endif()
+if(GGML_VULKAN_AVAILABLE)
+    list(APPEND _ggml_headers "${GGML_INCLUDE_DIR}/ggml-vulkan.h")
+endif()
+foreach(_header IN LISTS _ggml_headers)
+    if(NOT EXISTS "${_header}")
+        message(FATAL_ERROR "Required GGML public header not found: ${_header}")
+    endif()
+endforeach()
+dist_copy("${_ggml_headers}" "${GGML_DIST_DIR}/include")
 file(GLOB _ggml_libs "${GGML_LIB_DIR}/ggml*.lib")
 dist_copy("${_ggml_libs}" "${GGML_DIST_DIR}/lib")
 
