@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022]
-        cuda-version: ["13.3", "12.9"]
+        cuda-version: ["13.4", "12.9"]
 
     steps:
       - name: Checkout
@@ -42,7 +42,6 @@ jobs:
       - name: Setup CUDA Toolkit
         uses: mjun0812/setup-cuda@v1
         with:
-          # currently has an issue with CUDA 13.4
           version: '${{ matrix.cuda-version }}'
           method: 'local'
 
