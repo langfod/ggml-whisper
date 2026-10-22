@@ -11,23 +11,32 @@ permissions:
   contents: write
 
 env:
-  ARCHIVE_VERSION:
-    |- # Enter release tag name or version name in workflow_dispatch
-    ${{ github.event.release.tag_name || github.event.inputs.version || '1.0.3' }}
+  ARCHIVE_VERSION: ${{ github.event.inputs.version }}
 
 jobs:
   windows_x64:
     name: Build ggml / whisper.cpp libs for Windows x64 on ${{ matrix.os }} (CUDA ${{ matrix.cuda-version }})
     runs-on: ${{ matrix.os }}
+    env:
+      # Enable sccache's GitHub Actions cache backend
+      SCCACHE_GHA_ENABLED: "on"
+
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2022]
-        cuda-version: ["13.3", "12.9"]
+        cuda-version: ["13.4", "12.9"]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Configure sccache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
@@ -42,16 +51,16 @@ jobs:
       - name: Setup CUDA Toolkit
         uses: mjun0812/setup-cuda@v1
         with:
-          # currently has an issue with CUDA 13.4
           version: '${{ matrix.cuda-version }}'
           method: 'local'
 
       - name: Install Vulkan SDK
         #uses: humbletim/install-vulkan-sdk@v1.2
-        uses: humbletim/install-vulkan-sdk@033219e2d69dd4d3e873e217eb385fdd4b4438f4
+        uses: jakoch/install-vulkan-sdk-action@v1
         with:
-          version: 1.4.363.0
+          vulkan_version: 1.4.363.0
           cache: true
+          stripdown: true
 
       - name: Restore vcpkg Binary Cache
         id: cache-vcpkg-restore
