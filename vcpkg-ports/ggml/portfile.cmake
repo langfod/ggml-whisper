@@ -2,13 +2,23 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO ggml-org/ggml
     REF v${VERSION}
-    SHA512 d786cdb4b8251c68c37b15196102b909509d04991102c20323513c8dc288bfa6d0ef838bb5d87d87b7eec6e5763c516b7cfd53b189928f783182bff5cced4645
+    SHA512 4bf83e4f3f20b364003f74d16f97aed14bdc2af609d7b9980db90b415290eff6d90e5db85c72b1f3a4715647216fdac7fc41990593d8d02d48a5d0c7c0327c68
     HEAD_REF master
     PATCHES
-        cmake-config.diff
-        pkgconfig.diff
-        relax-link-options.diff
-        vulkan-shaders-gen.diff
+        patches/cmake-config.diff
+        patches/max-name.diff
+        patches/pkgconfig.diff
+        patches/relax-link-options.diff
+        patches/vulkan-shaders-gen.diff
+        patches/vulkan-queue-fetch.diff
+        patches/fused_snake.diff
+)
+        # cpu: add fused snake activation (mul -> sin -> sqr -> mul -> add)
+        # https://github.com/ggml-org/ggml/commit/210138933b22221ced02943b7b6e4308610ab530
+
+vcpkg_replace_string("${SOURCE_PATH}/src/ggml-cpu/CMakeLists.txt"
+    "target_compile_options(\${GGML_CPU_FEATS_NAME} PRIVATE -fno-lto)"
+    "target_compile_options(\${GGML_CPU_FEATS_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/GL-,-fno-lto>)"
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -74,16 +84,10 @@ vcpkg_cmake_configure(
         -DGGML_HIP=OFF
         -DGGML_SYCL=OFF
         -DGGML_NATIVE=OFF
-        -DGGML_AVX=ON
-        -DGGML_AVX2=ON
-        -DGGML_AVX512=OFF
-        -DGGML_BMI2=ON
-        -DGGML_FMA=ON
-        -DGGML_F16C=ON
-        -DGGML_SSE42=ON
         -DGGML_CUDA_GRAPHS=ON
-        -DGGML_CPU_ALL_VARIANTS=OFF
+        -DGGML_CPU_ALL_VARIANTS=ON
         -DGGML_BACKEND_DL=ON
+        -DGGML_MAX_NAME=64
         ${FEATURE_OPTIONS}
     MAYBE_UNUSED_VARIABLES
         PKG_CONFIG_EXECUTABLE
@@ -107,4 +111,4 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
-# LOCAL_CUDA_TOOLKIT: v13.4
+# LOCAL_CUDA_TOOLKIT: v13.5

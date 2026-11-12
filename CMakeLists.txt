@@ -20,13 +20,8 @@ set_property(GLOBAL PROPERTY JOB_POOLS "compile=${CMAKE_COMPILE_JOBS}" "link=${C
 set(CMAKE_JOB_POOL_COMPILE compile)
 set(CMAKE_JOB_POOL_LINK link)
 set(CMAKE_INSTALL_MESSAGE LAZY)
-#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
-#set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
-# Set your project name. This will be the name of your SKSE .dll file.
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" raw_version)
-string(STRIP "${raw_version}" APP_VERSION)
-project(GGML_WHISPER VERSION ${APP_VERSION} LANGUAGES CXX)
+project(GGML_WHISPER VERSION 1.0.4 LANGUAGES CXX)
 
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -35,12 +30,13 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Use the top-level build directory to ensure external deps are built once and reused
 set(BUILD_ROOT "${CMAKE_SOURCE_DIR}/build")
 
-
-# Configure compiler flags (must come before ccache to set flags correctly)
+# Configure compiler flags
 include(CompilerFlags)
 
 
 enable_language(C)
+# Reference tensor names can exceed default GGML_MAX_NAME of 64
+add_compile_definitions(GGML_MAX_NAME=64)
 find_package(ggml CONFIG REQUIRED)
 find_package(whisper CONFIG REQUIRED)
 
@@ -129,14 +125,11 @@ endforeach()
 foreach(_dll ${GGML_DEPLOY_DLLS})
     dist_copy("${_dll}" "${GGML_DIST_DIR}/bin")
 endforeach()
-# Vulkan runtime is required by ggml-vulkan.dll but not part of GGML_DEPLOY_DLLS
-if(GGML_VULKAN_AVAILABLE AND GGML_VULKAN_RUNTIME_DLL)
-    dist_copy("${GGML_VULKAN_RUNTIME_DLL}" "${GGML_DIST_DIR}/bin")
-endif()
 
 # Ship the public headers required by the deployed GGML backends and by
 # whisper.h/parakeet.h, which include ggml-cpu.h and its backend/alloc headers.
 set(_ggml_headers
+    "${GGML_INCLUDE_DIR}/gguf.h"
     "${GGML_INCLUDE_DIR}/ggml.h"
     "${GGML_INCLUDE_DIR}/ggml-alloc.h"
     "${GGML_INCLUDE_DIR}/ggml-backend.h"

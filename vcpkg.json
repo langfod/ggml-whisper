@@ -1,11 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
-    { "name": "ggml", 
-      "features": ["vulkan", "cuda", "openmp"]
-    },
-    { "name": "whisper-cpp",
-      "features": ["vulkan", "cuda"]
-    }
+    { "name": "ggml", "features": ["vulkan", "cuda", "openmp", "blas"] },
+    { "name": "whisper-cpp", "features": ["vulkan", "cuda"] }
+  ],
+  "overrides": [
+    { "name": "cuda", "version": "10.1#13" },
+    { "name": "blas", "version": "2023-04-14#6" },
+    { "name": "cblas", "version": "2025-10-29" },
+    { "name": "glslang", "version": "16.4.0" },
+    { "name": "openblas", "version": "0.3.34" },
+    { "name": "shaderc", "version": "2026.2" },
+    { "name": "vulkan", "version": "2023-12-17" },
+    { "name": "vulkan-headers", "version": "1.4.363.0" },
+    { "name": "vulkan-loader", "version": "1.4.363.0" },
+    { "name": "spirv-headers", "version": "1.4.363.0" },
+    { "name": "spirv-tools", "version": "1.4.363.0" }
   ]
 }

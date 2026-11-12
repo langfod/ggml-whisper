@@ -14,7 +14,6 @@ if(MSVC)
     # Code generation optimizations
     string(APPEND CMAKE_CXX_FLAGS " /Gy") # Function-level linking (enables dead code elimination)
     string(APPEND CMAKE_CXX_FLAGS " /Gw") # Optimize global data (similar to /Gy for globals)
-    string(APPEND CMAKE_CXX_FLAGS " /arch:AVX2") # Use AVX2 SIMD instructions
 
     string(APPEND CMAKE_CXX_FLAGS " /openmp:experimental") # Enable OpenMP with experimental support (mainly for ggml)
     

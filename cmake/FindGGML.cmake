@@ -69,7 +69,7 @@ else()
     set(GGML_VULKAN_AVAILABLE FALSE)
 endif()
 
-if (GGML_VULKAN_AVAILABLE)
+if(GGML_VULKAN_AVAILABLE)
     ggml_find_backend_dll(GGML_VULKAN_RUNTIME_DLL "vulkan-1.dll")
     if(GGML_VULKAN_RUNTIME_DLL)
         message(STATUS "  - Vulkan runtime available (vulkan-1.dll)")
@@ -88,9 +88,25 @@ else()
     set(GGML_OPENCL_AVAILABLE FALSE)
 endif()
 
-ggml_find_backend_dll(GGML_CPU_DLL "ggml-cpu.dll")
-if(GGML_CPU_DLL)
-    message(STATUS "  - CPU backend available (ggml-cpu.dll)")
+ggml_find_backend_dll(GGML_BLAS_DLL "ggml-blas.dll")
+if(GGML_BLAS_DLL)
+    message(STATUS "  - BLAS backend available (ggml-blas.dll)")
+    set(GGML_BLAS_AVAILABLE TRUE)
+else()
+    message(STATUS "  - BLAS backend not available")
+    set(GGML_BLAS_AVAILABLE FALSE)
+endif()
+
+# The CPU backend ships either as one packed ggml-cpu.dll or, with
+# GGML_CPU_ALL_VARIANTS + GGML_BACKEND_DL, as one ggml-cpu-<variant>.dll per
+# ISA level (no ggml-cpu.dll). Collect whichever layout is present.
+file(GLOB GGML_CPU_DLLS "${GGML_LIB_DIR}/ggml-cpu*.dll")
+if(NOT GGML_CPU_DLLS)
+    file(GLOB GGML_CPU_DLLS "${GGML_DLL_DIR}/ggml-cpu*.dll")
+endif()
+if(GGML_CPU_DLLS)
+    list(LENGTH GGML_CPU_DLLS GGML_CPU_DLL_COUNT)
+    message(STATUS "  - CPU backend available (${GGML_CPU_DLL_COUNT} DLL(s))")
     set(GGML_CPU_AVAILABLE TRUE)
 else()
     message(STATUS "  - CPU backend not available")
@@ -121,7 +137,7 @@ set(GGML_DEPLOY_DLLS
     "${GGML_DLL_DIR}/ggml-base.dll"
 )
 if(GGML_CPU_AVAILABLE)
-    list(APPEND GGML_DEPLOY_DLLS "${GGML_CPU_DLL}")
+    list(APPEND GGML_DEPLOY_DLLS ${GGML_CPU_DLLS})
 endif()
 
 if(GGML_CUDA_AVAILABLE)
@@ -131,9 +147,16 @@ endif()
 if(GGML_VULKAN_AVAILABLE)
     list(APPEND GGML_DEPLOY_DLLS "${GGML_VULKAN_DLL}")
 endif()
+if(GGML_VULKAN_AVAILABLE AND GGML_VULKAN_RUNTIME_DLL)
+    list(APPEND GGML_DEPLOY_DLLS "${GGML_VULKAN_RUNTIME_DLL}")
+endif()
 
 if(GGML_OPENCL_AVAILABLE)
     list(APPEND GGML_DEPLOY_DLLS "${GGML_OPENCL_DLL}")
+endif()
+
+if(GGML_BLAS_AVAILABLE)
+    list(APPEND GGML_DEPLOY_DLLS "${GGML_BLAS_DLL}")
 endif()
 
 # Function to copy GGML DLLs to target directory

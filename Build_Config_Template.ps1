@@ -8,7 +8,7 @@ $vsDevShellPath =  "W:/Program Files/Microsoft Visual Studio/2022/Community/Comm
 $localDefaultThreads = 16
 
 # https://developer.nvidia.com/cuda-toolkit-archive
-$env:CUDA_PATH="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4"
+$env:CUDA_PATH="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.5"
 
 # https://vulkan.lunarg.com/sdk/home
 $env:VULKAN_SDK="C:\VulkanSDK\1.4.363.0"

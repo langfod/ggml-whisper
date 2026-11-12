@@ -1,0 +1,36 @@
+diff --git a/src/ggml-vulkan/ggml-vulkan.cpp b/src/ggml-vulkan/ggml-vulkan.cpp
+index 5587dfc..8450ca6 100644
+--- a/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -1036,18 +1036,26 @@ std::unique_ptr<vk_queue> ggml_vk_create_queue(vk_device& device, uint32_t queue
+     q->transfer_only = transfer_only;
+ 
+     std::shared_ptr<vk_queue_handle> h;
+-    vk::DeviceQueueInfo2 queue_info2{};
+-    queue_info2.queueFamilyIndex = queue_family_index;
+-    queue_info2.queueIndex = queue_index;
+ 
++    // Wine 11 matches a vkGetDeviceQueue2 request to its queues with memcmp, padding included,
++    // so a flagged request is built from zeroed memory and an unflagged queue uses vkGetDeviceQueue.
+     if (device->has_internally_synchronized_queues) {
+         h = std::make_shared<vk_queue_handle_unsynchronized>();
+-        queue_info2.flags = eInternallySynchronizedKHR;
++        VkDeviceQueueInfo2 queue_info2;
++        memset(&queue_info2, 0, sizeof(queue_info2));
++        queue_info2.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_INFO_2;
++        queue_info2.flags = static_cast<VkDeviceQueueCreateFlags>(eInternallySynchronizedKHR);
++        queue_info2.queueFamilyIndex = queue_family_index;
++        queue_info2.queueIndex = queue_index;
++        h->queue = device->device.getQueue2(*reinterpret_cast<const vk::DeviceQueueInfo2 *>(&queue_info2));
+     } else {
+         h = std::make_shared<vk_queue_handle_synchronized>();
++        h->queue = device->device.getQueue(queue_family_index, queue_index);
+     }
+ 
+-    h->queue = device->device.getQueue2(queue_info2);
++    if (!h->queue) {
++        GGML_ABORT("ggml_vulkan: no queue for family %u, index %u", queue_family_index, queue_index);
++    }
+     h->device = device;
+     // Avoid concurrent submissions on NVIDIA due to driver bug.
+     if (device->vendor_id == VK_VENDOR_ID_NVIDIA) {

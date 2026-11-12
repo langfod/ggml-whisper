@@ -1,0 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1c02e11..441e6a7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -292,6 +292,11 @@ set(CMAKE_C_STANDARD_REQUIRED true)
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED true)
+ 
++# tensor name length (default 64 in ggml.h); bump to 128 for models with long names
++if(NOT GGML_MAX_NAME)
++    set(GGML_MAX_NAME 64)
++endif()
++add_compile_definitions(GGML_MAX_NAME=${GGML_MAX_NAME})
+ set(THREADS_PREFER_PTHREAD_FLAG ON)
+ 
+ find_package(Threads REQUIRED)
